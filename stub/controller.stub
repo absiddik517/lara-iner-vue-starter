@@ -1,0 +1,42 @@
+<?php
+
+namespace {{! namespace controller !}};
+
+use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
+use {{! namespace model !}};
+use {{! namespace request create full !}};
+use {{! namespace request update full !}};
+use {{! namespace resource full !}};
+
+class {{! controller class !}} extends Controller
+{
+    public function index(){
+      ${{! pages !}} = {{! Page !}}Resource::collection({{! Model !}}::orderByDesc('id')->get());
+      return inertia('{{! Inertia Page !}}', compact('{{! pages !}}'));
+    }
+    
+    public function store(StoreRequest $req){
+      {{! Model !}}::create($req->validated());
+      return redirect()->route('{{! route_name !}}index')->with('toast', [
+        'message' => '{{! Page !}} create successful', 
+        'type' => 'success'
+      ]);
+    }
+    
+    public function update($id, UpdateRequest $req){
+      {{! Model !}}::find($id)->update($req->validated());
+      return redirect()->route('{{! route_name !}}index')->with('toast', [
+        'message' => '{{! Page !}} update successful', 
+        'type' => 'success'
+      ]);
+    }
+    
+    public function destroy($id){
+      {{! Model !}}::find($id)->delete();
+      return redirect()->route('{{! route_name !}}index')->with('toast', [
+        'message' => '{{! Page !}} delete successfull', 
+        'type' => 'success'
+      ]);
+    }
+}

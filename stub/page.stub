@@ -1,0 +1,129 @@
+<template>
+  <admin-layout>
+    <template #header>
+      <h1 class="m-0">{{! Title !}}</h1>
+    </template>
+    
+    <Content>
+        <div class="row">
+          <div class="col-12">
+            <Card :isTable="true" varient="dark">
+              <template #title>{{! Title !}}</template>
+              <template #title_right>
+                <Button class="mr-2" type="button" varient="light" @click="showModal(null)">Create {{! Title !}}</Button>
+              </template>
+              
+              <table class="table table-hover">
+                <thead>
+                  <tr>
+                    <th>#</th>
+                    {{! table_th !}}
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr v-for="({{! page !}}, index) in {{! pages !}}.data">
+                    <td>{{ index + 1 }}</td>
+                    {{! table_td !}}
+                    <td>
+                      <Button type="button" :isLoading="loading{{! Page !}}DeleteButton" @click="delete{{! Page !}}({{! page !}}.delete_url)">
+                        Delete
+                      </Button>
+                      <Button class="ml-2" type="button" @click="showModal({{! page !}})">
+                        Edit
+                      </Button>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </Card>
+          </div>
+        </div>
+    </Content>
+    
+    <Modal id="{{! modal_id !}}" :title="modalTitle" varient="teal">
+       <template #body>
+        <form @submit.prevent="submit{{! Page !}}" novalidate="novalidate">
+           {{! formgroup !}}
+        </form>
+       </template>
+       
+       <template #action>
+         <Button :isLoading="form.processing" @click="submit{{! Page !}}"></Button>
+       </template> 
+    </Modal>
+  </admin-layout>
+</template>
+
+
+<script>
+  import AdminLayout from '@/Layouts/AdminLayout'
+  import Modal from '@/Components/Modal.vue'
+  import Card from '@/Components/Card.vue'
+  import Button from '@/Components/Button.vue'
+  import Content from '@/Components/Content.vue'
+  import { Inertia } from '@inertiajs/inertia'
+  import { useForm } from '@inertiajs/inertia-vue3'
+  
+  export default {
+    name: '{{! Title !}}',
+    components: {
+        AdminLayout, Modal, Content, Card, Button,
+    },
+    props: {
+      {{! pages !}}: Object,
+    },
+    data() {
+      return {
+        form: useForm({
+          {{! defineform !}}
+        }),
+        modal: null,
+        modalTitle: null,
+        isEditing: false,
+        editUrl: null,
+        loading{{! Page !}}DeleteButton: false,
+      }
+    },
+    mounted(){
+      let el = document.querySelector('#{{! modal_id !}}')
+      this.modal = new bootstrap.Modal(el)
+    },
+    methods: {
+      showModal(data = null){
+        this.isEditing = (data !== null)
+        this.modalTitle = (data == null) ? 'Create {{! page !}}' : 'Update {{! page !}}'
+        this.form.clearErrors()
+        if(this.isEditing){
+          this.editUrl = data.edit_url;
+          {{! form-update-populate !}}
+        }else{
+          this.form.reset()
+        }
+        this.modal.show()
+      },
+      submit{{! Page !}}(){
+        this.form.clearErrors()
+        var url = this.isEditing ? this.editUrl : route('{{! route_name !}}store');
+        this.form.post(url, {
+          preserveScroll: true,
+          onSuccess: () => {
+            this.form.reset()
+            this.modal.hide();
+          }
+        });
+      },
+      delete{{! Page !}}(url){
+        Inertia.delete(url, {
+          onBefore: () => {
+            this.loading{{! Page !}}DeleteButton = true
+          },
+          onFinish: finish => {
+            this.loading{{! Page !}}DeleteButton = false;
+          }
+        })
+      }
+    },
+    
+  }
+</script>

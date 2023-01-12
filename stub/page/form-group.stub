@@ -1,0 +1,5 @@
+            <div class="form-group">
+              <label for="{{! table_field !}}_field">{{! Table Field !}}</label>
+              <input v-model="form.{{! table_field !}}" :disabled="form.processing" type="text" name="{{! table_field !}}" class="form-control" :class="{'is-invalid': form.errors.{{! table_field !}}}" id="{{! table_field !}}_field" placeholder="{{! Page !}} {{! table field !}}" >
+              <span class="error invalid-feedback">{{ form.errors.{{! table_field !}} }}</span>
+            </div>
